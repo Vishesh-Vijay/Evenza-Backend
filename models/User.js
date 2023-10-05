@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    // googleId: {
+    //     type: String,
+    //     required: true,
+    //     unique: true,
+    // },
     email: {
         type: String,
         required: true,
@@ -12,7 +17,7 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: true,
+        required: false,
         unique: true,
     },
     createdAt: {

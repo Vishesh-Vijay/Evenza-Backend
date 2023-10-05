@@ -4,7 +4,7 @@ const eventSchema = new mongoose.Schema(
 	{
 		title: { type: String, required: true, },
 		description: { type: String, required: true, },
-		location: { type: String, requried: false, },
+		location: { type: String, required: false, },
 		link: { type: String, required: false, },
 		startDate: { type: Date, required: true, },
 		endDate: { type: Date, required: true, },
@@ -12,14 +12,15 @@ const eventSchema = new mongoose.Schema(
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "user",
+				required: false,
 			},
 		],
-		status: { type: String, required: true, },
+		status: { type: String, required: false, },
 		regDeadline: { type: Date, required: false, },
-		capacity: { type: Number, required: true, },
+		capacity: { type: Number, required: false, },
 		image: {
 			type: String,
-			required: true,
+			required: false,
 		},
 		url: {
 			type: String,
