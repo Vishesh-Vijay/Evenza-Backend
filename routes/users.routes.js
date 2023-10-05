@@ -4,5 +4,5 @@ const router = express.Router();
 import {
     signIn
 } from "../controllers/user.js";
-router.get("/auth/google", signIn);
+router.get("/signin", signIn);
 export default router;
