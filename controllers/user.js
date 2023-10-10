@@ -33,12 +33,12 @@ export async function signIn(req,res){
           phoneNumber: "blahblah"
         })
         await createdUser.save()
-      //   generateAuthToken(createdUser)
+        return createdUser.generateAuthToken; 
       }
       else{
       //   console.log(alreadyUser)
         console.log('user already present')
-      //   generateAuthToken(alreadyUser[0])
+        return alreadyUser.generateAuthToken;
       }
       res.status(201).send("Function completed successfully")
   }
