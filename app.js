@@ -5,10 +5,10 @@ import passport from "passport";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieSession from "cookie-session";
-import session from 'express-session';
+import session from "express-session";
 import eventRoute from "./routes/events.js";
 import userRoute from "./routes/users.routes.js";
-import GoogleStrategy from 'passport-google-oauth20';
+import GoogleStrategy from "passport-google-oauth20";
 import { createEvent } from "./controllers/events.js";
 dotenv.config();
 import db from "./config/db.config.js";
@@ -23,11 +23,11 @@ app.use(cookieParser());
 // app.use(passport.initialize());
 // app.use(passport.session());
 
-
 app.use("/events/new", createEvent);
 app.use("/events", eventRoute);
 app.use("/user", userRoute);
 app.listen(
-  process.env.PORT ? process.env.PORT : 8080,
-  console.log(`App is now live!`)
+    process.env.PORT ? process.env.PORT : 8080,
+    process.env.HOST ? process.env.HOST : "127.0.0.1",
+    console.log(`App is now live!`)
 );
