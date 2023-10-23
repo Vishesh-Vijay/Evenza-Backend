@@ -20,24 +20,32 @@ const userSchema = new mongoose.Schema({
         required: false,
         unique: true,
     },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
+    isChor: {
+        type: Boolean,
+        default: true,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
     },
 });
 
-userSchema.methods.generateAuthToken = async function (){
-    try{
+userSchema.methods.generateAuthToken = async function () {
+    try {
         let token = jwt.sign(
-            {id: this._id , email: this.email},
+            { id: this._id, email: this.email },
             process.env.SECRET,
             {
-                expiresIn : '24h',
+                expiresIn: '24h',
             }
         );
 
         return token;
-    }catch(error){
+    } catch (error) {
         console.log('Error while generating token');
     }
 };
