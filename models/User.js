@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    qr:
+    {
+        type: String,
+        default: null,
+    },
     // googleId: {
     //     type: String,
     //     required: true,
