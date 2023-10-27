@@ -1,4 +1,4 @@
-import { Events } from "../models/events.js";
+import { Events } from "../models/event.model.js";
 import dotenv from "dotenv";
 import { User } from "../models/User.js";
 export const createEvent = async (req, res) => {
