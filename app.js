@@ -11,6 +11,7 @@ import userRoute from "./routes/users.routes.js";
 import activityRoute from "./routes/activity.routes.js";
 import GoogleStrategy from "passport-google-oauth20";
 import { createEvent } from "./controllers/events.js";
+import attendanceRoute from "./routes/attendance.js";
 dotenv.config();
 import db from "./config/db.config.js";
 import cookieParser from "cookie-parser";
@@ -24,7 +25,7 @@ app.use(cookieParser());
 app.use(cors())
 // app.use(passport.initialize());
 // app.use(passport.session());
-
+app.use("/attendance", attendanceRoute);
 app.use("/events/new", createEvent);
 app.use("/events", eventRoute);
 app.use("/user", userRoute);
