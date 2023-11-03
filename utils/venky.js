@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 const saltRounds = 10; // You can adjust the number of salt rounds
 
-async function encryptObject(detailsObject) {
+export async function encryptObject(detailsObject) {
     try {
         const detailsString = JSON.stringify(detailsObject);
         const hash = await bcrypt.hash(detailsString, saltRounds);
@@ -11,7 +11,7 @@ async function encryptObject(detailsObject) {
     }
 }
 
-async function decryptObject(hash) {
+export async function decryptObject(hash) {
     try {
         const detailsString = await bcrypt.compare(hash, saltRounds);
         const detailsObject = JSON.parse(detailsString);
