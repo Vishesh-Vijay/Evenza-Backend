@@ -26,7 +26,7 @@ app.use(cors())
 // app.use(passport.initialize());
 // app.use(passport.session());
 app.use("/attendance", attendanceRoute);
-app.use("/events/new", createEvent);
+// app.use("/events/new", createEvent);
 app.use("/events", eventRoute);
 app.use("/user", userRoute);
 app.use("/activity", activityRoute);
