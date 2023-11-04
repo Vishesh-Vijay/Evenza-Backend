@@ -10,9 +10,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null,
     },
-    password: { 
+    password: {
         type: String,
-        required: true, 
+        required: true,
     },
     // googleId: {
     //     type: String,
@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
     isChor: {
         type: Boolean,
         default: true,
+    },
+    institute: {
+        type: String,
+        required: false,
     },
     createdAt: {
         type: Date,

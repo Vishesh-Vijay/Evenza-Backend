@@ -61,25 +61,25 @@ const client = new OAuth2Client(clientId, clientSecret, redirectUri);
 
 
 export async function LogIn(req, res) {
-  try {
-      // Get user credentials from the request body
-      const { email, password } = req.body;
+    try {
+        // Get user credentials from the request body
+        const { email, password } = req.body;
 
-      // Perform authentication (check credentials)
-      const isAuthenticated = await authenticateUser(email, password);
+        // Perform authentication (check credentials)
+        const isAuthenticated = await authenticateUser(email, password);
 
-      if (isAuthenticated) {
-          // Authentication successful
-          res.status(200).json({ message: 'Login successful' });
-      } else {
-          // Authentication failed
-          res.status(401).json({ message: 'Login failed: Invalid credentials' });
-      }
-  } catch (error) {
-      // Handle other errors (e.g., database errors, network errors)
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while logging in' });
-  }
+        if (isAuthenticated) {
+            // Authentication successful
+            res.status(200).json({ message: 'Login successful' });
+        } else {
+            // Authentication failed
+            res.status(401).json({ message: 'Login failed: Invalid credentials' });
+        }
+    } catch (error) {
+        // Handle other errors (e.g., database errors, network errors)
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while logging in' });
+    }
 }
 
 
@@ -94,6 +94,7 @@ export async function Register(req, res) {
             phoneNumber,
             isAdmin,
             isChor,
+            institute,
         } = req.body;
 
         // Hash the user's password before saving it
@@ -109,6 +110,7 @@ export async function Register(req, res) {
             phoneNumber,
             isAdmin,
             isChor,
+            institute,
         });
 
         await user.save();
@@ -124,15 +126,15 @@ export async function Register(req, res) {
 
 
 export async function GetAllUsers(req, res) {
-  try {
-      // Find all users in the database
-      const users = await User.find({});
+    try {
+        // Find all users in the database
+        const users = await User.find({});
 
-      // Return the list of users
-      res.status(200).json({ users });
-  } catch (error) {
-      // Handle errors (e.g., database errors, network errors)
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching users' });
-  }
+        // Return the list of users
+        res.status(200).json({ users });
+    } catch (error) {
+        // Handle errors (e.g., database errors, network errors)
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching users' });
+    }
 }
