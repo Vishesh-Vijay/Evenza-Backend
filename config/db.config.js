@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-
+import dotenv from "dotenv";
+dotenv.config();
 export default function connDB() {
   mongoose.set("strictQuery", true);
   mongoose
