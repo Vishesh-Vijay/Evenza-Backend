@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 import { encryptObject } from '../utils/venky.js';
 // import bcrypt from 'bcrypt';
 import bcrypt from 'bcrypt';
-
+import { authenticateUser } from '../utils/venky.js';
 // import { decryptObject } from '../utils/venky.js';
 dotenv.config();
 
