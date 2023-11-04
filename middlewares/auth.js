@@ -1,10 +1,21 @@
 import jwt from 'jsonwebtoken';
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 
-function authenticateToken(req, res, next) {
-  const token = req.header('x-auth-token'); // Assuming the token is passed in the 'x-auth-token' header
+export async function authenticateToken(req, res, next) {
+  // Get the token from the request's headers
+  const authHeader = req.header('Authorization');
+
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
+
+  // Split the header to extract the token part
+  const token = authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
+    return res.status(401).json({ message: 'Malformed token. Use the "Bearer" prefix.' });
   }
 
   try {
@@ -12,12 +23,7 @@ function authenticateToken(req, res, next) {
     req.user = decoded;
     next();
   } catch (ex) {
+    console.log(ex);
     return res.status(401).json({ message: 'Invalid token.' });
   }
 }
-
-// Example usage in a route
-app.get('/protected-route', authenticateToken, (req, res) => {
-  // This route is protected and can only be accessed with a valid JWT token.
-  res.json({ message: 'Protected route accessed successfully.' });
-});
