@@ -1,4 +1,4 @@
-const express = require('express');
+import express from "express";
 const router = express.Router();
 import { updateAttendance } from "../controllers/attendance.controller.js";
 
@@ -7,4 +7,4 @@ import { updateAttendance } from "../controllers/attendance.controller.js";
 router.post('/:activityId', updateAttendance);
 
 
-module.exports = router;
+export default router;
