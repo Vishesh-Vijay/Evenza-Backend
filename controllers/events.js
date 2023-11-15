@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import { User } from "../models/User.js";
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import sharp from "sharp";
 import crypto from "crypto";
 dotenv.config();
 const bucketName = process.env.BUCKET_NAME;
