@@ -19,6 +19,6 @@ router.get("/", GetAllUsers);
 router.get("/:userId", getUserDetailsById);
 router.get('/:authenticateToken', authenticateToken, (req, res) => {
     // The user data from the token is available in req.user
-    res.json({ user: req.user });
+    res.json(req.user);
 });
 export default router;
