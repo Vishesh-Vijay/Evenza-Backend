@@ -1,49 +1,29 @@
 import jwt from 'jsonwebtoken';
+import express from 'express';
+import dotenv from 'dotenv';
+dotenv.config();
 
-import {
-    response_401,
-    response_400,
-    response_500,
-  } from '../utils/responseCodes.js';
-  
-  import User from '../models/User.js';
-  
-  const authMiddleware = async (req, res, next) => {
-    try {
-      const authHeader = req.header('Authorization');
-  
-      if (!authHeader || !/(Bearer )\w+/.test(authHeader)) {
-        // authorization header is not present or is not of the required format
-        return response_400(res, 'Request is invalid');
-      }
-  
-      // extracting the token and verifying it
-      const authToken = authHeader.replace('Bearer ', '');
-  
-      let userMongoId;
-  
-      try {
-        const { payload } = jwt.verify(authToken, process.env.SECRET); // will throw err is token is invalid or expired
-        req.isAuthenticated = true;
-        userMongoId = payload.id;
-      } catch (err) {
-        // token is invalid or expired
-        return response_401(res, 'Request is unauthorized');
-      }
-  
-      // extracting user info from DB
-      const user = await User.findById(userMongoId);
-  
-      if (!user) {
-        // user is not present in DB
-        return response_401(res, 'Request is unauthorized');
-      }
-  
-      req.user = user;
-      next();
-    } catch (err) {
-      return response_500(res, 'Internal Server Error', err);
-    }
-  };
-  
-  export default authMiddleware;
+export async function authenticateToken(req, res, next) {
+  // Get the token from the request's headers
+  const authHeader = req.header('Authorization');
+
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Access denied. No token provided.' });
+  }
+
+  // Split the header to extract the token part
+  const token = authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Malformed token. Use the "Bearer" prefix.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (ex) {
+    console.log(ex);
+    return res.status(401).json({ message: 'Invalid token.' });
+  }
+}
