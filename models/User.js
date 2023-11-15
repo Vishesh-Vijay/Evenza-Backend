@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
     },
-    qr:
-    {
+    qr: {
         type: String,
         default: null,
     },
@@ -39,9 +38,8 @@ const userSchema = new mongoose.Schema({
     },
     institute: {
         type: String,
-        required: false,
+        required: true,
     },
-
     createdAt: {
         type: Date,
         default: Date.now,
@@ -67,7 +65,7 @@ userSchema.methods.generateAuthToken = function () {
     const token = jwt.sign(
         { _id: this._id, email: this.email },
         process.env.JWT_SECRET,
-        { expiresIn: '24h' } // Set the token expiration time
+        { expiresIn: "24h" } // Set the token expiration time
     );
     return token;
 };
