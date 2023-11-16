@@ -152,7 +152,7 @@ export async function LogIn(req, res) {
             const token = user.generateAuthToken();
 
             // Send the token in the response
-            res.status(200).json({ message: "Login successful", token });
+            res.status(200).json({ message: "Login successful", token, email });
         } else {
             // Authentication failed
             res.status(401).json({
