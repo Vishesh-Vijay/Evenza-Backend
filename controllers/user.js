@@ -8,6 +8,7 @@ import bcrypt from "bcrypt";
 import { authenticateUser } from "../utils/venky.js";
 // import { decryptObject } from '../utils/venky.js';
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 dotenv.config();
 
 const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -86,7 +87,6 @@ export async function Register(req, res) {
     try {
         const {
             name,
-            qr,
             password,
             email,
             phoneNumber,
@@ -98,11 +98,13 @@ export async function Register(req, res) {
         // Hash the user's password before saving it
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const combinedString = email + password;
+        const hashedQR = crypto.createHash('sha256').update(combinedString).digest('hex');
 
         // Create a new user document in the database
         const user = new User({
             name,
-            qr,
+            qr: hashedQR,
             password: hashedPassword, // Store the hashed password
             email,
             phoneNumber,
