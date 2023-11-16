@@ -9,7 +9,6 @@ import {
     
 } from "../controllers/events.js";
 
-// Routes for Events
 router.get("/", getAllEvents);
 router.get("/:eventId", getEvent);
 router.delete("/:eventId", deleteEvent);
