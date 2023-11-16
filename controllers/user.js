@@ -169,7 +169,9 @@ export async function LogIn(req, res) {
 }
 export async function getUserDetailsById(req, res) {
     try {
-        const email = req.params.id;
+        // console.log(req.params);
+        const email = req.params.userId;
+        console.log(email);
         const user = await User.findOne({ email: email });
         if (!user) {
             return res.status(404).json({ error: "User not found" });
