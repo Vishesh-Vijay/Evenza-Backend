@@ -11,7 +11,8 @@ export const updateAttendance = async (req, res) => {
         } = req.body;
         const detailsObject = await decryptObject(qr);
         const {
-            email
+            email,
+            password
         } = detailsObject;
 
         const user = await User.findOne({ email });
