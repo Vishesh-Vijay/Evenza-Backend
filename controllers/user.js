@@ -152,7 +152,7 @@ export async function LogIn(req, res) {
             const token = user.generateAuthToken();
 
             // Send the token in the response
-            res.status(200).json({ message: "Login successful", token, email });
+            res.status(200).json({ message: "Login successful", token });
         } else {
             // Authentication failed
             res.status(401).json({
@@ -167,8 +167,8 @@ export async function LogIn(req, res) {
 }
 export async function getUserDetailsById(req, res) {
     try {
-        const userId = req.params.id;
-        const user = await User.findById(userId);
+        const email = req.params.id;
+        const user = await User.findOne({ email: email });
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
