@@ -47,6 +47,16 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    participated:
+    {
+        type: Number,
+        default: 0,
+    },
+    attended:
+    {
+        type: Number,
+        default: 0,
+    },
 });
 
 // userSchema.methods.generateAuthToken = async function () {
