@@ -49,12 +49,12 @@ const userSchema = new mongoose.Schema({
     },
     registered:
     {
-        type: mongoose.Schema.Types.ObjectId,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'Events',
     },
     attended:
     {
-        type: mongoose.Schema.Types.ObjectId,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'Events',
     },
 });

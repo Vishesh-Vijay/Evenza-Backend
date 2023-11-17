@@ -8,9 +8,9 @@ const attendanceSchema = new Schema({
         ref: 'User',
         required: true,
     },
-    activity: {
+    event: {
         type: Schema.Types.ObjectId,
-        ref: 'Activity',
+        ref: 'Events',
         required: true,
     },
     status: {
