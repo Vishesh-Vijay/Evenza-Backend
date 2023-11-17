@@ -149,15 +149,26 @@ export const registerUser = async(req,res) => {
         })
         await newAttendee.save()
         const currentEvent = await Events.findById(eventId)
-        const currentUser = await User.findById(userId)
         currentEvent.attendees.push(newAttendee._id)
         await currentEvent.save()
+        const currentUser = await User.findById(userId)
         currentUser.registered.push(eventId)
         await currentUser.save()
         return res.status(200).send(newAttendee)
     }
     catch(err){
         console.log(err)
+        return res.status(500).send(err)
+    }
+}
+
+export const getAllAttendees = async (req,res) => {
+    try{
+        const eventId = req.params.id
+        const currentEvent = await Events.findById(eventId)
+        return res.status(200).json(currentEvent.attendees)
+    }
+    catch(err){
         return res.status(500).send(err)
     }
 }

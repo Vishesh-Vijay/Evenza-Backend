@@ -18,7 +18,12 @@ const eventSchema = new mongoose.Schema({
 	link: { type: String, required: false },
 	startDate: { type: Date, required: true },
 	endDate: { type: Date, required: true },
-	attendees: [attendeeSchema], // Array of attendees with "isApproved" field
+	attendees: {
+		type: [mongoose.Schema.Types.ObjectId],
+		ref: "Attendance",
+		
+		// Array of attendees with "isApproved" field
+	}, 
 	regDeadline: { type: Date, required: false },
 	capacity: { type: Number, required: false },
 	image: {
