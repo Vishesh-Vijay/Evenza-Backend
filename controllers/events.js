@@ -1,7 +1,12 @@
 import { Events } from "../models/event.model.js";
 import dotenv from "dotenv";
 import { User } from "../models/User.js";
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+    S3Client,
+    PutObjectCommand,
+    GetObjectCommand,
+    DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 dotenv.config();
@@ -68,18 +73,23 @@ export const createEvent = async (req, res) => {
 export const getAllEvents = async (req, res) => {
     try {
         const events = await Events.find();
-        await Promise.all(events.map(async (event) => {
-            const getObjectParams = {
-                Bucket: bucketName,
-                Key: event.image,
-            };
-            const command = new GetObjectCommand(getObjectParams);
-            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-            event.url = url;
-            return event;
-        }));
+        await Promise.all(
+            events.map(async (event) => {
+                const getObjectParams = {
+                    Bucket: bucketName,
+                    Key: event.image,
+                };
+                const command = new GetObjectCommand(getObjectParams);
+                const url = await getSignedUrl(s3, command, {
+                    expiresIn: 3600,
+                });
+                event.url = url;
+                return event;
+            })
+        );
         res.status(200).json({ events });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -95,7 +105,7 @@ export const getEvent = async (req, res) => {
         const getObjectParams = {
             Bucket: bucketName,
             Key: event.image,
-        }
+        };
         const command = new GetObjectCommand(getObjectParams);
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
         event.url = url;

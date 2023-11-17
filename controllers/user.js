@@ -99,7 +99,10 @@ export async function Register(req, res) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const combinedString = email + password;
-        const hashedQR = crypto.createHash('sha256').update(combinedString).digest('hex');
+        const hashedQR = crypto
+            .createHash("sha256")
+            .update(combinedString)
+            .digest("hex");
 
         // Create a new user document in the database
         const user = new User({
