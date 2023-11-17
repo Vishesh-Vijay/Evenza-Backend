@@ -7,6 +7,7 @@ import {
     Register,
     GetAllUsers,
     getUserDetailsById,
+    dropCollection
 } from "../controllers/user.js";
 import { authenticateToken } from "../middlewares/auth.js";
 
@@ -19,4 +20,5 @@ router.get("/:authenticateToken", authenticateToken, (req, res) => {
     // The user data from the token is available in req.user
     res.json(req.user);
 });
+router.delete("/drop",dropCollection)
 export default router;
