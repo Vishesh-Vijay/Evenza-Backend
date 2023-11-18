@@ -95,12 +95,12 @@ export async function Register(req, res) {
             institute,
         } = req.body;
 
-        if(!name || !password || !email || !institute){
-            return res.status(400).send({error:"All required fields not present"})
+        if (!name || !password || !email || !institute) {
+            return res.status(400).send({ error: "All required fields not present" })
         }
 
-        if(!validator.isEmail(email) || !validator.isMobilePhone(phoneNumber)){
-            return res.status(400).send({error:"Invalid email or phone number"})
+        if (!validator.isEmail(email) || !validator.isMobilePhone(phoneNumber)) {
+            return res.status(400).send({ error: "Invalid email or phone number" })
         }
 
         // Hash the user's password before saving it
@@ -164,7 +164,7 @@ export async function LogIn(req, res) {
             const token = user.generateAuthToken();
 
             // Send the token in the response
-            res.status(200).json({ message: "Login successful", token });
+            res.status(200).json({ message: "Login successful", token, email });
         } else {
             // Authentication failed
             res.status(401).json({
@@ -196,7 +196,7 @@ export async function getUserDetailsById(req, res) {
     }
 }
 
-export async function dropCollection(req,res){
+export async function dropCollection(req, res) {
     User.collection.drop()
     res.status(200).send("User collection drop")
 }
