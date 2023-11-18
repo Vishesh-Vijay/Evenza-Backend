@@ -1,4 +1,4 @@
-import { User } from "../models/User.js";
+import {User} from "../models/User.js";
 import { OAuth2Client } from "google-auth-library";
 import url from "url";
 import * as dotenv from "dotenv";
@@ -9,6 +9,7 @@ import { authenticateUser } from "../utils/venky.js";
 // import { decryptObject } from '../utils/venky.js';
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import validator from "validator";
 dotenv.config();
 
 const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
@@ -91,9 +92,16 @@ export async function Register(req, res) {
             email,
             phoneNumber,
             isAdmin,
-            isChor,
             institute,
         } = req.body;
+
+        if(!name || !password || !email || !institute){
+            return res.status(400).send({error:"All required fields not present"})
+        }
+
+        if(!validator.isEmail(email) || !validator.isMobilePhone(phoneNumber)){
+            return res.status(400).send({error:"Invalid email or phone number"})
+        }
 
         // Hash the user's password before saving it
         const saltRounds = 10;
@@ -112,7 +120,6 @@ export async function Register(req, res) {
             email,
             phoneNumber,
             isAdmin,
-            isChor,
             institute,
         });
 
@@ -187,4 +194,9 @@ export async function getUserDetailsById(req, res) {
             error: "An error occurred while fetching user details",
         });
     }
+}
+
+export async function dropCollection(req,res){
+    User.collection.drop()
+    res.status(200).send("User collection drop")
 }

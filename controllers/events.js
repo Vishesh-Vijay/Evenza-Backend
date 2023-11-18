@@ -1,7 +1,8 @@
 import { Events } from "../models/event.model.js";
-import dotenv from "dotenv";
 import { User } from "../models/User.js";
 import { Activity } from "../models/activity.model.js";
+import { Attendance } from "../models/Attendance.js";
+import dotenv from "dotenv";
 import {
     S3Client,
     PutObjectCommand,
@@ -135,5 +136,37 @@ export const deleteEvent = async (req, res) => {
         res.json({ message: "Event deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+export const registerUser = async (req, res) => {
+    try {
+        const { userId, eventId } = req.body;
+
+        const newAttendee = new Attendance({
+            user: userId,
+            event: eventId,
+        });
+        await newAttendee.save();
+        const currentEvent = await Events.findById(eventId);
+        currentEvent.attendees.push(newAttendee._id);
+        await currentEvent.save();
+        const currentUser = await User.findById(userId);
+        currentUser.registered.push(eventId);
+        await currentUser.save();
+        return res.status(200).send(newAttendee);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+    }
+};
+
+export const getAllAttendees = async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const currentEvent = await Events.findById(eventId);
+        return res.status(200).json(currentEvent.attendees);
+    } catch (err) {
+        return res.status(500).send(err);
     }
 };
