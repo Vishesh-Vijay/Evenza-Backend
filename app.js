@@ -25,7 +25,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors())
+app.use(cors());
+app.use(morgan("dev"));
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -39,6 +40,6 @@ app.use("/user", userRoute);
 app.use("/activity", activityRoute);
 app.listen(
     process.env.PORT ? process.env.PORT : 8080,
-    process.env.HOST ? process.env.HOST : "127.0.0.1",
+    process.env.HOST ? process.env.HOST : "0.0.0.0",
     console.log(`App is now live!`)
 );

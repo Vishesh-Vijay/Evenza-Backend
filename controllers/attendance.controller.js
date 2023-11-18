@@ -46,3 +46,17 @@ export const updateAttendance = async (req, res) => {
 }
 
 
+export const verifyAttendee = async (req, res) => {
+    try {
+        const attendeeId = req.params.id
+        const newStatus = req.body.status // 'absent' or 'present'
+        const currentAttendee = await Attendance.findById(attendeeId)
+        currentAttendee.status = newStatus
+        await currentAttendee.save()
+        return res.status(201).json(currentAttendee)
+    }
+    catch (err) {
+        return res.status(500).send(err)
+    }
+
+}

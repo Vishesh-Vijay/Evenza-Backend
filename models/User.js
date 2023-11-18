@@ -35,10 +35,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    isChor: {
-        type: Boolean,
-        default: true,
-    },
+    // isChor: {
+    //     type: Boolean,
+    //     default: true,
+    // },
     institute: {
         type: String,
         required: true,
@@ -49,13 +49,13 @@ const userSchema = new mongoose.Schema({
     },
     registered:
     {
-        type: Number,
-        default: 0,
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Events',
     },
     attended:
     {
-        type: Number,
-        default: 0,
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Events',
     },
 });
 

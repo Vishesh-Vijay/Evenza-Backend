@@ -1,7 +1,14 @@
 import { Events } from "../models/event.model.js";
-import dotenv from "dotenv";
 import { User } from "../models/User.js";
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { Activity } from "../models/activity.model.js";
+import { Attendance } from "../models/Attendance.js";
+import dotenv from "dotenv";
+import {
+    S3Client,
+    PutObjectCommand,
+    GetObjectCommand,
+    DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 dotenv.config();
@@ -18,15 +25,16 @@ const s3 = new S3Client({
 });
 export const createEvent = async (req, res) => {
     try {
+        console.log(req.body)
         const {
             title,
             description,
             location,
             link,
-            startDate,
+            startDate   ,
             endDate,
             status,
-            regDeadline,
+            regDeadline ,
             capacity,
             regFee,
         } = req.body;
@@ -68,18 +76,23 @@ export const createEvent = async (req, res) => {
 export const getAllEvents = async (req, res) => {
     try {
         const events = await Events.find();
-        await Promise.all(events.map(async (event) => {
-            const getObjectParams = {
-                Bucket: bucketName,
-                Key: event.image,
-            };
-            const command = new GetObjectCommand(getObjectParams);
-            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
-            event.url = url;
-            return event;
-        }));
+        await Promise.all(
+            events.map(async (event) => {
+                const getObjectParams = {
+                    Bucket: bucketName,
+                    Key: event.image,
+                };
+                const command = new GetObjectCommand(getObjectParams);
+                const url = await getSignedUrl(s3, command, {
+                    expiresIn: 3600,
+                });
+                event.url = url;
+                return event;
+            })
+        );
         res.status(200).json({ events });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -92,14 +105,16 @@ export const getEvent = async (req, res) => {
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
+        const activities = await Activity.find({ event: id });
+        console.log(activities);
         const getObjectParams = {
             Bucket: bucketName,
             Key: event.image,
-        }
+        };
         const command = new GetObjectCommand(getObjectParams);
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
         event.url = url;
-        res.status(200).json({ event });
+        res.status(200).json({ event, activities });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -122,5 +137,37 @@ export const deleteEvent = async (req, res) => {
         res.json({ message: "Event deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+};
+
+export const registerUser = async (req, res) => {
+    try {
+        const { userId, eventId } = req.body;
+
+        const newAttendee = new Attendance({
+            user: userId,
+            event: eventId,
+        });
+        await newAttendee.save();
+        const currentEvent = await Events.findById(eventId);
+        currentEvent.attendees.push(newAttendee._id);
+        await currentEvent.save();
+        const currentUser = await User.findById(userId);
+        currentUser.registered.push(eventId);
+        await currentUser.save();
+        return res.status(200).send(newAttendee);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
+    }
+};
+
+export const getAllAttendees = async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const currentEvent = await Events.findById(eventId);
+        return res.status(200).json(currentEvent.attendees);
+    } catch (err) {
+        return res.status(500).send(err);
     }
 };
