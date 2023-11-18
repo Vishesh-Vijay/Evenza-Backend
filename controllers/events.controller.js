@@ -31,7 +31,7 @@ export const createEvent = async (req, res) => {
             title,
             description,
             location,
-            admin,
+            email,
             link,
             startDate,
             endDate,
@@ -51,12 +51,13 @@ export const createEvent = async (req, res) => {
         };
         const command = new PutObjectCommand(params);
         const result = await s3.send(command);
+        const adminUser = await User.findOne(email)
         // Create a new event document in the database
         const event = new Events({
             title,
             description,
             location,
-            admin,
+            admin: adminUser._id,
             link,
             startDate,
             endDate,
