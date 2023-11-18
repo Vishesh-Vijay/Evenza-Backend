@@ -2,17 +2,21 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-const attendanceSchema = new Schema({
+const approveSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
-    activity: {
+    event: {
         type: Schema.Types.ObjectId,
-        ref: 'Activity',
+        ref: 'Events',
         required: true,
+    },
+    status: {
+        type: Boolean,
+        default: 'absent',
     },
 });
 
-export const Attendance = mongoose.model("Attendance", attendanceSchema);
+export const Approve = mongoose.model("Approve", approveSchema);
