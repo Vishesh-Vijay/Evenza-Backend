@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 const saltRounds = 10; // You can adjust the number of salt rounds
 
-import { User } from "../models/User.js";
+import { User } from "../models/user.model.js";
 export async function encryptObject(detailsObject) {
     try {
         const detailsString = JSON.stringify(detailsObject);

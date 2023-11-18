@@ -1,8 +1,8 @@
 // import { User } from "../models/User.js";
 // import { Attendance } from "../models/Attendance.js";
 import { encryptObject, decryptObject } from '../utils/venky.js';
-import { User } from "../models/User.js";
-import { Attendance } from "../models/Attendance.js";
+import { User } from "../models/user.model.js";
+import { Attendance } from "../models/attendance.model.js";
 // import { decryptObject } from '../utils/venky.js';
 
 

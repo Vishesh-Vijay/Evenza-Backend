@@ -15,7 +15,7 @@ const approveSchema = new Schema({
     },
     status: {
         type: Boolean,
-        default: 'absent',
+        default: false,
     },
 });
 

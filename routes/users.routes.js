@@ -8,7 +8,7 @@ import {
     GetAllUsers,
     getUserDetailsById,
     dropCollection
-} from "../controllers/user.js";
+} from "../controllers/user.controller.js";
 import { authenticateToken } from "../middlewares/auth.js";
 
 // router.get("/signin", signIn);
