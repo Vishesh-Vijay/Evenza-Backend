@@ -18,15 +18,16 @@ const s3 = new S3Client({
 });
 export const createEvent = async (req, res) => {
     try {
+        console.log(req.body)
         const {
             title,
             description,
             location,
             link,
-            startDate,
+            startDate   ,
             endDate,
             status,
-            regDeadline,
+            regDeadline ,
             capacity,
             regFee,
         } = req.body;
