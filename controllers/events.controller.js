@@ -103,7 +103,9 @@ export const getAllEvents = async (req, res) => {
 
 export const getAllEventsForUser = async (req, res) => {
     try {
-        const userId = req.params.id
+        const email = req.params.email
+        const currentUser = await User.findOne({email})
+        const userId = currentUser._id
         const events = await Events.find();
         await Promise.all(
             events.map(async (event) => {
