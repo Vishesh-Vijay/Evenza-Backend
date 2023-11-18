@@ -200,3 +200,4 @@ export async function dropCollection(req, res) {
     User.collection.drop()
     res.status(200).send("User collection drop")
 }
+

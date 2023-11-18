@@ -60,3 +60,4 @@ export const verifyAttendee = async (req, res) => {
     }
 
 }
+
