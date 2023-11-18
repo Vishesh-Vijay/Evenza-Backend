@@ -31,14 +31,10 @@ const userSchema = new mongoose.Schema({
         required: false,
         unique: true,
     },
-    isAdmin: {
-        type: Boolean,
-        default: false,
+    eventAdmin: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Events'
     },
-    // isChor: {
-    //     type: Boolean,
-    //     default: true,
-    // },
     institute: {
         type: String,
         required: true,

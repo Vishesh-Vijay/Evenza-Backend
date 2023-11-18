@@ -6,6 +6,10 @@ const activitySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Events",
     },
+    admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     description: { type: String, required: true },
     location: { type: String, required: false },
     link: { type: String, required: false },
