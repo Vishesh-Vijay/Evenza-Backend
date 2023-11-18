@@ -47,12 +47,7 @@ const userSchema = new mongoose.Schema({
     {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Events',
-    },
-    attended:
-    {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Events',
-    },
+    }
 });
 
 // userSchema.methods.generateAuthToken = async function () {

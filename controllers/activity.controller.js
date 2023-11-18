@@ -41,7 +41,8 @@ export const createActivity = async (req, res) => {
         });
 
         await newActivity.save();
-
+        currentEvent.activities.push(newActivity._id)
+        await currentEvent.save()
         res.status(201).json({ newActivity });
     } catch (error) {
         console.error(error);

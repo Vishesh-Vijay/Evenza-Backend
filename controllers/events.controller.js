@@ -31,6 +31,7 @@ export const createEvent = async (req, res) => {
             title,
             description,
             location,
+            admin,
             link,
             startDate   ,
             endDate,
@@ -55,6 +56,7 @@ export const createEvent = async (req, res) => {
             title,
             description,
             location,
+            admin,
             link,
             startDate,
             endDate,
@@ -172,3 +174,4 @@ export const getAllRequests = async (req, res) => {
         return res.status(500).send(err);
     }
 };
+
