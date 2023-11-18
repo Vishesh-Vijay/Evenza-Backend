@@ -1,6 +1,7 @@
 import { Events } from "../models/event.model.js";
 import dotenv from "dotenv";
 import { User } from "../models/User.js";
+import { Activity } from "../models/activity.model.js";
 import {
     S3Client,
     PutObjectCommand,
@@ -102,6 +103,8 @@ export const getEvent = async (req, res) => {
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
+        const activities = await Activity.find({ event: id });
+        console.log(activities);
         const getObjectParams = {
             Bucket: bucketName,
             Key: event.image,
@@ -109,7 +112,7 @@ export const getEvent = async (req, res) => {
         const command = new GetObjectCommand(getObjectParams);
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
         event.url = url;
-        res.status(200).json({ event });
+        res.status(200).json({ event, activities });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
