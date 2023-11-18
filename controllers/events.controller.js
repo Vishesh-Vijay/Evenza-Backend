@@ -181,7 +181,7 @@ export const updateApprovalStatus = async (req, res) => {
         const { eventId, userId, newStatus } = req.body;
 
         // Find the approval with the given eventId and userId
-        const approval = await Approval.findOne({ event: eventId, user: userId });
+        const approval = await Approve.findOne({ event: eventId, user: userId });
 
         if (!approval) {
             return res.status(404).json({ message: 'Approval not found' });

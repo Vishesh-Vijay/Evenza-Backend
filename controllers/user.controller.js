@@ -199,7 +199,7 @@ export async function getUserDetailsById(req, res) {
     try {
         const email = req.params.userId;
 
-        const user = await User.findOne(email).populate('registered');
+        const user = await User.findOne({email}).populate('registered');
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
