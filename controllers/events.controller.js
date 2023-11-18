@@ -32,10 +32,10 @@ export const createEvent = async (req, res) => {
             description,
             location,
             link,
-            startDate   ,
+            startDate,
             endDate,
             status,
-            regDeadline ,
+            regDeadline,
             capacity,
             regFee,
         } = req.body;
@@ -166,7 +166,7 @@ export const registerUser = async (req, res) => {
 export const getAllRequests = async (req, res) => {
     try {
         const eventId = req.params.id;
-        const currentEvent = await Events.findById(eventId);
+        const currentEvent = await Events.findById(eventId).populate('requests');
         return res.status(200).json(currentEvent.requests);
     } catch (err) {
         return res.status(500).send(err);
