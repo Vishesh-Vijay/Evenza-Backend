@@ -14,8 +14,9 @@ const approveSchema = new Schema({
         required: true,
     },
     status: {
-        type: Boolean,
-        default: false,
+        type: String,
+        enum: ['approved','pending','declined'],
+        default: 'pending'
     },
 });
 

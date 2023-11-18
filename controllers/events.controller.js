@@ -101,6 +101,50 @@ export const getAllEvents = async (req, res) => {
     }
 };
 
+export const getAllEventsForUser = async (req, res) => {
+    try {
+        const userId = req.params.id
+        const events = await Events.find();
+        await Promise.all(
+            events.map(async (event) => {
+                const getObjectParams = {
+                    Bucket: bucketName,
+                    Key: event.image,
+                };
+                const command = new GetObjectCommand(getObjectParams);
+                const url = await getSignedUrl(s3, command, {
+                    expiresIn: 3600,
+                });
+                event.url = url;
+                return event;
+            })
+        );
+        let returnObj = []
+        for(let i=0 ; i<events.length ; i++){
+            let event = events[i]
+            let curObj = {
+                event
+            }
+            const approval = await Approve.findOne({event:event._id,user:userId})
+            console.log(approval)
+            if(approval){
+                curObj.status = approval.status
+            }
+            else{
+                curObj.status = 'none'
+            }
+            console.log(curObj)
+            returnObj.push(curObj)
+            if(i===events.length-1){
+                res.status(200).json(returnObj);
+            }
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Get a specific event by id
 export const getEvent = async (req, res) => {
     const id = req.params.eventId;
@@ -169,9 +213,35 @@ export const registerUser = async (req, res) => {
 export const getAllRequests = async (req, res) => {
     try {
         const eventId = req.params.id;
-        const currentEvent = await Events.findById(eventId).populate('requests');
+        const currentEvent = await Events.findById(eventId).populate({
+            path: 'requests',
+            populate: {
+                path: 'user'
+            }
+        })
+        // .exec(function(err,response){
+        //     if(err){
+        //         console.log(err)
+        //         return res.status(500).send(err)
+        //     }
+        //     console.log(response)
+        // })
         return res.status(200).json(currentEvent.requests);
+
+        // let returnobj=[]
+        // currentEvent.requests.forEach(element => {
+        //     console.log(element)
+        //     let curUser = await User.findById(element.user)
+        //     console.log(curUser)
+        //     let curobj = {
+        //         status: element.status,
+        //         user: curUser
+        //     }
+        //     returnobj.push(curobj)
+        // });
+        
     } catch (err) {
+        console.log(err)
         return res.status(500).send(err);
     }
 };
@@ -188,7 +258,10 @@ export const updateApprovalStatus = async (req, res) => {
         }
 
         // Update the status field of the approval with the newStatus
-        approval.status = newStatus;
+        if(newStatus)
+            approval.status = 'approved';
+        else
+            approval.status = 'declined'
 
         // Save the updated approval
         await approval.save();
