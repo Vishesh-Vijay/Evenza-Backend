@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js";
+import { Events } from "../models/event.model.js";
 import { OAuth2Client } from "google-auth-library";
 import url from "url";
 import * as dotenv from "dotenv";
@@ -8,9 +9,28 @@ import bcrypt from "bcrypt";
 import { authenticateUser } from "../utils/venky.js";
 // import { decryptObject } from '../utils/venky.js';
 import jwt from "jsonwebtoken";
+import {
+    S3Client,
+    PutObjectCommand,
+    GetObjectCommand,
+    DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import validator from "validator";
 dotenv.config();
+
+const bucketName = process.env.BUCKET_NAME;
+const bucketRegion = process.env.BUCKET_REGION;
+const accessKey = process.env.ACCESS_KEY;
+const secretAccessKey = process.env.SECRET_ACCESS_KEY;
+const s3 = new S3Client({
+    region: bucketRegion,
+    credentials: {
+        accessKeyId: accessKey,
+        secretAccessKey: secretAccessKey,
+    },
+});
 
 const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
@@ -200,6 +220,20 @@ export async function getUserDetailsById(req, res) {
         const email = req.params.userId;
 
         const user = await User.findOne({email}).populate('registered');
+        for(let i=0 ; i<user.registered.length ; i++){
+            const id = user.registered[i]._id
+            const event = await Events.findById(id);
+            if (!event) {
+                return res.status(404).json({ message: "Event not found" });
+            }
+            const getObjectParams = {
+                Bucket: bucketName,
+                Key: event.image,
+            };
+            const command = new GetObjectCommand(getObjectParams);
+            const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+            user.registered[i].url = url;
+        }
 
         if (!user) {
             return res.status(404).json({ error: "User not found" });
