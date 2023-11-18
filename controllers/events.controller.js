@@ -150,13 +150,14 @@ export const getAllEventsForUser = async (req, res) => {
 // Get a specific event by id
 export const getEvent = async (req, res) => {
     const id = req.params.eventId;
+    console.log(id)
     try {
         const event = await Events.findById(id);
         if (!event) {
             return res.status(404).json({ message: "Event not found" });
         }
         const activities = await Activity.find({ event: id });
-        console.log(activities);
+        // console.log(activities);
         const getObjectParams = {
             Bucket: bucketName,
             Key: event.image,
@@ -164,7 +165,15 @@ export const getEvent = async (req, res) => {
         const command = new GetObjectCommand(getObjectParams);
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
         event.url = url;
-        res.status(200).json({ event, activities });
+        // event.populate('activities')
+        // event.populate('requests')
+        const currentEvent = await event.populate({
+            path: 'requests',
+            populate: {
+                path: 'user'
+            }
+        })
+        res.status(200).json({ currentEvent,activities });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

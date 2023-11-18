@@ -14,7 +14,7 @@ import {
 
 router.get("/", getAllEvents);
 router.get("/:email", getAllEventsForUser);
-router.get("/:eventId", getEvent);
+router.get("/id/:eventId", getEvent);
 router.delete("/:eventId", deleteEvent);
 router.post("/create", createEvent)
 router.post("/userreg", registerUser)
