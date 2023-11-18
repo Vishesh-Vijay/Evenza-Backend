@@ -202,9 +202,6 @@ export const registerUser = async (req, res) => {
         const currentEvent = await Events.findById(eventId);
         currentEvent.requests.push(newApprove._id);
         await currentEvent.save();
-        const currentUser = await User.findById(userId);
-        currentUser.registered.push(eventId);
-        await currentUser.save();
         return res.status(200).send(newApprove);
     } catch (err) {
         console.log(err);
@@ -260,11 +257,21 @@ export const updateApprovalStatus = async (req, res) => {
         }
 
         // Update the status field of the approval with the newStatus
-        if(newStatus)
+        if(newStatus){
             approval.status = 'approved';
-        else
+            const currentUser = await User.findById(userId);
+            currentUser.registered.push(eventId);
+            await currentUser.save();
+        }
+        else{
             approval.status = 'declined'
-
+            const currentUser = await User.findById(userId);
+            const ind = currentUser.registered.indexOf(eventId)
+            if(ind!==-1){
+                currentUser.registered.splice(ind,1)
+                await currentUser.save();
+            }
+        }
         // Save the updated approval
         await approval.save();
 
