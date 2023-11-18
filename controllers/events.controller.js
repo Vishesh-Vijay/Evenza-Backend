@@ -1,7 +1,7 @@
 import { Events } from "../models/event.model.js";
-import { User } from "../models/User.js";
+import { User } from "../models/user.model.js";
 import { Activity } from "../models/activity.model.js";
-import { Attendance } from "../models/Attendance.js";
+import { Attendance } from "../models/attendance.model.js";
 import dotenv from "dotenv";
 import {
     S3Client,
@@ -11,6 +11,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
+import { Approve } from "../models/approve.model.js";
 dotenv.config();
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -144,29 +145,29 @@ export const registerUser = async (req, res) => {
     try {
         const { userId, eventId } = req.body;
 
-        const newAttendee = new Attendance({
+        const newApprove = new Approve({
             user: userId,
             event: eventId,
         });
-        await newAttendee.save();
+        await newApprove.save();
         const currentEvent = await Events.findById(eventId);
-        currentEvent.attendees.push(newAttendee._id);
+        currentEvent.requests.push(newApprove._id);
         await currentEvent.save();
         const currentUser = await User.findById(userId);
         currentUser.registered.push(eventId);
         await currentUser.save();
-        return res.status(200).send(newAttendee);
+        return res.status(200).send(newApprove);
     } catch (err) {
         console.log(err);
         return res.status(500).send(err);
     }
 };
 
-export const getAllAttendees = async (req, res) => {
+export const getAllRequests = async (req, res) => {
     try {
         const eventId = req.params.id;
         const currentEvent = await Events.findById(eventId);
-        return res.status(200).json(currentEvent.attendees);
+        return res.status(200).json(currentEvent.requests);
     } catch (err) {
         return res.status(500).send(err);
     }

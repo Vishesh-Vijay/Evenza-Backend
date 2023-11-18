@@ -8,7 +8,7 @@ import {
     deleteEvent,
     registerUser,
     getAllAttendees
-} from "../controllers/events.js";
+} from "../controllers/events.controller.js";
 
 router.get("/", getAllEvents);
 router.get("/:eventId", getEvent);
