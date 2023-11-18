@@ -197,7 +197,7 @@ export async function LogIn(req, res) {
 // }
 export async function getUserDetailsById(req, res) {
     try {
-        const email = req.params.email;
+        const email = req.params.userId;
 
         const user = await User.findOne(email).populate('registered');
 
