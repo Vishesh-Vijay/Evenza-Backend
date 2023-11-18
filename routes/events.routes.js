@@ -7,15 +7,15 @@ import {
     createEvent,
     deleteEvent,
     registerUser,
-    getAllAttendees
+    getAllRequests
 } from "../controllers/events.controller.js";
 
 router.get("/", getAllEvents);
 router.get("/:eventId", getEvent);
 router.delete("/:eventId", deleteEvent);
 router.post("/create", createEvent)
-router.post("/userreg",registerUser)
-router.get("/attendees/:id",getAllAttendees)
+router.post("/userreg", registerUser)
+router.get("/attendees/:id", getAllRequests)
 
 
 export default router;

@@ -1,4 +1,4 @@
-import {User} from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import { OAuth2Client } from "google-auth-library";
 import url from "url";
 import * as dotenv from "dotenv";
@@ -177,12 +177,30 @@ export async function LogIn(req, res) {
         res.status(500).json({ error: "An error occurred while logging in" });
     }
 }
+// export async function getUserDetailsById(req, res) {
+//     try {
+//         // console.log(req.params);
+//         const email = req.params.userId;
+//         console.log(email);
+//         const user = await User.findOne({ email: email });
+//         if (!user) {
+//             return res.status(404).json({ error: "User not found" });
+//         }
+
+//         res.status(200).json({ user });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({
+//             error: "An error occurred while fetching user details",
+//         });
+//     }
+// }
 export async function getUserDetailsById(req, res) {
     try {
-        // console.log(req.params);
-        const email = req.params.userId;
-        console.log(email);
-        const user = await User.findOne({ email: email });
+        const email = req.params.email;
+
+        const user = await User.findOne(email).populate('registered');
+
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -195,6 +213,7 @@ export async function getUserDetailsById(req, res) {
         });
     }
 }
+
 
 export async function dropCollection(req, res) {
     User.collection.drop()
