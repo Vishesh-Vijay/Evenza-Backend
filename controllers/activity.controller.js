@@ -16,13 +16,13 @@ export const createActivity = async (req, res) => {
             event
         } = req.body;
 
-        if(!title || !description || !startDate || !endDate || !event){
+        if (!title || !description || !startDate || !endDate || !event) {
             return res.status(400).send("Required fields to create activity not present")
         }
 
         const currentEvent = await Events.findById(event);
 
-        if(!currentEvent){
+        if (!currentEvent) {
             return res.status(400).send("Corresponding event does not exist")
         }
 
@@ -84,3 +84,4 @@ export const deleteActivity = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
