@@ -93,16 +93,16 @@ export const setPhysicalAttendance = async (req, res) => {
         const { activityId, userEmail, userScanEmail } = req.body
         const currentActivity = await Activity.findById(activityId)
         if (!currentActivity) {
-            return res.status(400).send("Corresponding activity does not exist")
+            return res.status(400).send({errMess: "Corresponding activity does not exist"})
         }
         const currentUser = await User.findOne({email: userEmail})
         if (!currentUser) {
-            return res.status(400).send("Corresponding user does not exist")
+            return res.status(400).send({errMess: "Corresponding user does not exist"})
         }
         const eventId = currentActivity.event
         const currentEvent = await Events.findById(eventId)
         if (!currentEvent) {
-            return res.status(400).send("Corresponding event does not exist")
+            return res.status(400).send({errMess: "Corresponding event does not exist"})
         }
         console.log(currentEvent)
         const userScan = await User.findOne({email:userScanEmail})
@@ -114,7 +114,7 @@ export const setPhysicalAttendance = async (req, res) => {
         // }
         const currentAttendance = await Attendance.find({user:currentUser._id,activity: activityId})
         if(currentAttendance){
-            return res.status(400).send("User has already attended the activity")
+            return res.status(400).send({errMess: "User has already attended the activity"})
         }
         if (currentActivity.startDate < Date.now() && currentActivity.endDate > Date.now()) {
             const newAttendee = new Attendance({
@@ -124,7 +124,7 @@ export const setPhysicalAttendance = async (req, res) => {
             await newAttendee.save()
         }
         else{
-            res.status(400).send("Activity timeline is not followed")
+            res.status(400).send({errMess: "Activity timeline is not followed"})
         }
         return res.status(201).json(newAttendee)
     }
