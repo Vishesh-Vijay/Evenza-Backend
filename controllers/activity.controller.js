@@ -1,5 +1,7 @@
 import { Activity } from "../models/activity.model.js";
+import { Attendance } from "../models/attendance.model.js";
 import { Events } from "../models/event.model.js";
+import { User } from "../models/user.model.js";
 
 export const createActivity = async (req, res) => {
     try {
@@ -86,3 +88,68 @@ export const deleteActivity = async (req, res) => {
     }
 };
 
+export const setPhysicalAttendance = async (req, res) => {
+    try {
+        const { activityId, userEmail, userScanEmail } = req.body
+        const currentActivity = await Activity.findById(activityId)
+        if (!currentActivity) {
+            return res.status(400).send("Corresponding activity does not exist")
+        }
+        const currentUser = await User.findOne({email: userEmail})
+        if (!currentUser) {
+            return res.status(400).send("Corresponding user does not exist")
+        }
+        const eventId = currentActivity.event
+        const currentEvent = await Events.findById(eventId)
+        if (!currentEvent) {
+            return res.status(400).send("Corresponding event does not exist")
+        }
+        console.log(currentEvent)
+        const userScan = await User.findOne({email:userScanEmail})
+        console.log(userScan)
+        const userScanId = userScan._id
+        // Check this
+        // if(userScanId!=currentActivity.admin && userScanId!=currentEvent.admin){
+        //     return res.status(400).send("Scanning person is not the admin")
+        // }
+        const currentAttendance = await Attendance.find({user:currentUser._id,activity: activityId})
+        if(currentAttendance){
+            return res.status(400).send("User has already attended the activity")
+        }
+        if (currentActivity.startDate < Date.now() && currentActivity.endDate > Date.now()) {
+            const newAttendee = new Attendance({
+                user: currentUser._id,
+                activity: activityId,
+            })
+            await newAttendee.save()
+        }
+        else{
+            res.status(400).send("Activity timeline is not followed")
+        }
+        return res.status(201).json(newAttendee)
+    }
+    
+    catch (err) {
+        return res.status(500).send(err)
+    }
+}
+
+export const getPhysicalAttendees = async(req,res)=>{
+    try{
+        const activityId = req.params.activityId
+        const attendees = await Attendance.find({activity: activityId})
+        console.log(attendees)
+        let finalArr = []
+        for(let i=0 ; i<attendees.length ; i++){
+            const curUser = await User.findById(attendees[i].user)
+            // console.log(curUser)
+            finalArr.push(curUser)
+        }
+        // const finalObj = await attendees.populate('user')
+        res.status(200).send(finalArr)
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).send(err)
+    }
+}

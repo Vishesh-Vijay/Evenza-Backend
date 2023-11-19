@@ -291,3 +291,16 @@ export const updateApprovalStatus = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const getAllActivities = async(req,res)=>{
+    try{
+        const eventId = req.params.eventId
+        const currentEvent = await Events.findById(eventId)
+        const finalEvent = await currentEvent.populate('activities')
+        return res.status(200).send(finalEvent.activities)
+    }
+    catch(err){
+        console.log(err)
+        return res.status(500).send(err)
+    }
+}

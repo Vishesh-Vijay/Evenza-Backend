@@ -14,10 +14,14 @@ export async function encryptObject(detailsObject) {
 
 export async function decryptObject(hash) {
     try {
+        // console.log("inside decrypt")
+        // console.log(hash)
         const detailsString = await bcrypt.compare(hash, saltRounds);
-        const detailsObject = JSON.parse(detailsString);
+        // console.log(detailsString)
+        const detailsObject = await JSON.parse(detailsString);
         return detailsObject;
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }

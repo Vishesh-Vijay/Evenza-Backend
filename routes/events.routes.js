@@ -9,16 +9,18 @@ import {
     registerUser,
     getAllRequests,
     updateApprovalStatus,
-    getAllEventsForUser
+    getAllEventsForUser,
+    getAllActivities
 } from "../controllers/events.controller.js";
 
 router.get("/", getAllEvents);
 router.get("/:email", getAllEventsForUser);
 router.get("/id/:eventId", getEvent);
-router.delete("/:eventId", deleteEvent);
+router.get("/requests/:id", getAllRequests)
+router.get("/activities/:eventId", getAllActivities)
 router.post("/create", createEvent)
 router.post("/userreg", registerUser)
-router.get("/requests/:id", getAllRequests)
 router.post("/approve", updateApprovalStatus)
+router.delete("/:eventId", deleteEvent);
 
 export default router;
