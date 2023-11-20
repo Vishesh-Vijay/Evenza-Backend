@@ -92,8 +92,10 @@ export const deleteActivity = async (req, res) => {
 
 export const setPhysicalAttendance = async (req, res) => {
     try {
+        console.log(req.body);
         const { activityId, userEmail, userScanEmail } = req.body;
         const currentActivity = await Activity.findById(activityId);
+        console.log(currentActivity);
         if (!currentActivity) {
             return res
                 .status(400)
@@ -124,7 +126,9 @@ export const setPhysicalAttendance = async (req, res) => {
             user: currentUser._id,
             activity: activityId,
         });
-        if (currentAttendance) {
+        console.log(currentAttendance);
+        if (currentAttendance.length > 0) {
+            console.log("HI");
             return res
                 .status(400)
                 .send({ errMess: "User has already attended the activity" });
@@ -138,13 +142,14 @@ export const setPhysicalAttendance = async (req, res) => {
                 activity: activityId,
             });
             await newAttendee.save();
+            return res.status(201).json(newAttendee);
         } else {
             res.status(400).send({
                 errMess: "Activity timeline is not followed",
             });
         }
-        return res.status(201).json(newAttendee);
     } catch (err) {
+        console.log(err);
         return res.status(500).send(err);
     }
 };
