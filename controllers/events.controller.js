@@ -26,7 +26,7 @@ const s3 = new S3Client({
 });
 export const createEvent = async (req, res) => {
     try {
-        console.log(req.body)
+        console.log(req.body);
         const {
             title,
             description,
@@ -51,7 +51,7 @@ export const createEvent = async (req, res) => {
         };
         const command = new PutObjectCommand(params);
         const result = await s3.send(command);
-        const adminUser = await User.findOne(email)
+        const adminUser = await User.findOne(email);
         // Create a new event document in the database
         const event = new Events({
             title,
@@ -103,9 +103,9 @@ export const getAllEvents = async (req, res) => {
 
 export const getAllEventsForUser = async (req, res) => {
     try {
-        const email = req.params.email
-        const currentUser = await User.findOne({email})
-        const userId = currentUser._id
+        const email = req.params.email;
+        const currentUser = await User.findOne({ email });
+        const userId = currentUser._id;
         const events = await Events.find();
         await Promise.all(
             events.map(async (event) => {
@@ -121,23 +121,25 @@ export const getAllEventsForUser = async (req, res) => {
                 return event;
             })
         );
-        let returnObj = []
-        for(let i=0 ; i<events.length ; i++){
-            let event = events[i]
+        let returnObj = [];
+        for (let i = 0; i < events.length; i++) {
+            let event = events[i];
             let curObj = {
-                event
+                event,
+            };
+            const approval = await Approve.findOne({
+                event: event._id,
+                user: userId,
+            });
+            console.log(approval);
+            if (approval) {
+                curObj.status = approval.status;
+            } else {
+                curObj.status = "none";
             }
-            const approval = await Approve.findOne({event:event._id,user:userId})
-            console.log(approval)
-            if(approval){
-                curObj.status = approval.status
-            }
-            else{
-                curObj.status = 'none'
-            }
-            console.log(curObj)
-            returnObj.push(curObj)
-            if(i===events.length-1){
+            console.log(curObj);
+            returnObj.push(curObj);
+            if (i === events.length - 1) {
                 res.status(200).json(returnObj);
             }
         }
@@ -150,7 +152,7 @@ export const getAllEventsForUser = async (req, res) => {
 // Get a specific event by id
 export const getEvent = async (req, res) => {
     const id = req.params.eventId;
-    console.log(id)
+    console.log(id);
     try {
         const event = await Events.findById(id);
         if (!event) {
@@ -168,12 +170,12 @@ export const getEvent = async (req, res) => {
         // event.populate('activities')
         // event.populate('requests')
         const currentEvent = await event.populate({
-            path: 'requests',
+            path: "requests",
             populate: {
-                path: 'user'
-            }
-        })
-        res.status(200).json({ currentEvent,activities });
+                path: "user",
+            },
+        });
+        res.status(200).json({ currentEvent, activities });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -222,11 +224,11 @@ export const getAllRequests = async (req, res) => {
     try {
         const eventId = req.params.id;
         const currentEvent = await Events.findById(eventId).populate({
-            path: 'requests',
+            path: "requests",
             populate: {
-                path: 'user'
-            }
-        })
+                path: "user",
+            },
+        });
         // .exec(function(err,response){
         //     if(err){
         //         console.log(err)
@@ -247,9 +249,8 @@ export const getAllRequests = async (req, res) => {
         //     }
         //     returnobj.push(curobj)
         // });
-        
     } catch (err) {
-        console.log(err)
+        console.log(err);
         return res.status(500).send(err);
     }
 };
@@ -259,25 +260,27 @@ export const updateApprovalStatus = async (req, res) => {
         const { eventId, userId, newStatus } = req.body;
 
         // Find the approval with the given eventId and userId
-        const approval = await Approve.findOne({ event: eventId, user: userId });
+        const approval = await Approve.findOne({
+            event: eventId,
+            user: userId,
+        });
 
         if (!approval) {
-            return res.status(404).json({ message: 'Approval not found' });
+            return res.status(404).json({ message: "Approval not found" });
         }
 
         // Update the status field of the approval with the newStatus
-        if(newStatus){
-            approval.status = 'approved';
+        if (newStatus) {
+            approval.status = "approved";
             const currentUser = await User.findById(userId);
             currentUser.registered.push(eventId);
             await currentUser.save();
-        }
-        else{
-            approval.status = 'declined'
+        } else {
+            approval.status = "declined";
             const currentUser = await User.findById(userId);
-            const ind = currentUser.registered.indexOf(eventId)
-            if(ind!==-1){
-                currentUser.registered.splice(ind,1)
+            const ind = currentUser.registered.indexOf(eventId);
+            if (ind !== -1) {
+                currentUser.registered.splice(ind, 1);
                 await currentUser.save();
             }
         }
@@ -288,19 +291,18 @@ export const updateApprovalStatus = async (req, res) => {
         return res.json(approval);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
 
-export const getAllActivities = async(req,res)=>{
-    try{
-        const eventId = req.params.eventId
-        const currentEvent = await Events.findById(eventId)
-        const finalEvent = await currentEvent.populate('activities')
-        return res.status(200).send(finalEvent.activities)
+export const getAllActivities = async (req, res) => {
+    try {
+        const eventId = req.params.eventId;
+        const currentEvent = await Events.findById(eventId);
+        const finalEvent = await currentEvent.populate("activities");
+        return res.status(200).send(finalEvent.activities);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
     }
-    catch(err){
-        console.log(err)
-        return res.status(500).send(err)
-    }
-}
+};

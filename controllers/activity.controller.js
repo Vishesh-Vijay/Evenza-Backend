@@ -15,17 +15,19 @@ export const createActivity = async (req, res) => {
             capacity,
             image,
             url,
-            event
-        } = req.body;
+            event,
+        } = req.body.formData;
 
         if (!title || !description || !startDate || !endDate || !event) {
-            return res.status(400).send("Required fields to create activity not present")
+            return res
+                .status(400)
+                .send("Required fields to create activity not present");
         }
 
         const currentEvent = await Events.findById(event);
 
         if (!currentEvent) {
-            return res.status(400).send("Corresponding event does not exist")
+            return res.status(400).send("Corresponding event does not exist");
         }
 
         // Create a new event document in the database
@@ -39,12 +41,12 @@ export const createActivity = async (req, res) => {
             capacity,
             image,
             url,
-            event
+            event,
         });
 
         await newActivity.save();
-        currentEvent.activities.push(newActivity._id)
-        await currentEvent.save()
+        currentEvent.activities.push(newActivity._id);
+        await currentEvent.save();
         res.status(201).json({ newActivity });
     } catch (error) {
         console.error(error);
@@ -90,66 +92,78 @@ export const deleteActivity = async (req, res) => {
 
 export const setPhysicalAttendance = async (req, res) => {
     try {
-        const { activityId, userEmail, userScanEmail } = req.body
-        const currentActivity = await Activity.findById(activityId)
+        const { activityId, userEmail, userScanEmail } = req.body;
+        const currentActivity = await Activity.findById(activityId);
         if (!currentActivity) {
-            return res.status(400).send({errMess: "Corresponding activity does not exist"})
+            return res
+                .status(400)
+                .send({ errMess: "Corresponding activity does not exist" });
         }
-        const currentUser = await User.findOne({email: userEmail})
+        const currentUser = await User.findOne({ email: userEmail });
         if (!currentUser) {
-            return res.status(400).send({errMess: "Corresponding user does not exist"})
+            return res
+                .status(400)
+                .send({ errMess: "Corresponding user does not exist" });
         }
-        const eventId = currentActivity.event
-        const currentEvent = await Events.findById(eventId)
+        const eventId = currentActivity.event;
+        const currentEvent = await Events.findById(eventId);
         if (!currentEvent) {
-            return res.status(400).send({errMess: "Corresponding event does not exist"})
+            return res
+                .status(400)
+                .send({ errMess: "Corresponding event does not exist" });
         }
-        console.log(currentEvent)
-        const userScan = await User.findOne({email:userScanEmail})
-        console.log(userScan)
-        const userScanId = userScan._id
+        console.log(currentEvent);
+        const userScan = await User.findOne({ email: userScanEmail });
+        console.log(userScan);
+        const userScanId = userScan._id;
         // Check this
         // if(userScanId!=currentActivity.admin && userScanId!=currentEvent.admin){
         //     return res.status(400).send("Scanning person is not the admin")
         // }
-        const currentAttendance = await Attendance.find({user:currentUser._id,activity: activityId})
-        if(currentAttendance){
-            return res.status(400).send({errMess: "User has already attended the activity"})
+        const currentAttendance = await Attendance.find({
+            user: currentUser._id,
+            activity: activityId,
+        });
+        if (currentAttendance) {
+            return res
+                .status(400)
+                .send({ errMess: "User has already attended the activity" });
         }
-        if (currentActivity.startDate < Date.now() && currentActivity.endDate > Date.now()) {
+        if (
+            currentActivity.startDate < Date.now() &&
+            currentActivity.endDate > Date.now()
+        ) {
             const newAttendee = new Attendance({
                 user: currentUser._id,
                 activity: activityId,
-            })
-            await newAttendee.save()
+            });
+            await newAttendee.save();
+        } else {
+            res.status(400).send({
+                errMess: "Activity timeline is not followed",
+            });
         }
-        else{
-            res.status(400).send({errMess: "Activity timeline is not followed"})
-        }
-        return res.status(201).json(newAttendee)
+        return res.status(201).json(newAttendee);
+    } catch (err) {
+        return res.status(500).send(err);
     }
-    
-    catch (err) {
-        return res.status(500).send(err)
-    }
-}
+};
 
-export const getPhysicalAttendees = async(req,res)=>{
-    try{
-        const activityId = req.params.activityId
-        const attendees = await Attendance.find({activity: activityId})
-        console.log(attendees)
-        let finalArr = []
-        for(let i=0 ; i<attendees.length ; i++){
-            const curUser = await User.findById(attendees[i].user)
+export const getPhysicalAttendees = async (req, res) => {
+    try {
+        const activityId = req.params.activityId;
+        const attendees = await Attendance.find({ activity: activityId });
+        console.log(attendees);
+        let finalArr = [];
+        for (let i = 0; i < attendees.length; i++) {
+            const curUser = await User.findById(attendees[i].user);
             // console.log(curUser)
-            finalArr.push(curUser)
+            finalArr.push(curUser);
         }
         // const finalObj = await attendees.populate('user')
-        res.status(200).send(finalArr)
+        res.status(200).send(finalArr);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send(err);
     }
-    catch(err){
-        console.log(err)
-        return res.status(500).send(err)
-    }
-}
+};
